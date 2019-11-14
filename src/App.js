@@ -1,12 +1,12 @@
 import React, {Component} from 'react'
-import {Router, Route} from 'react-router-dom';
+import {Route, Router} from 'react-router-dom';
+import {connect} from "react-redux";
 import {createBrowserHistory} from 'history';
 
-import PrivateRoute from './components/PrivateRoute';
+import Navbar from './components/Navbar';
 import HomePage from './components/HomePage';
 import LoginPage from './components/LoginPage';
-import Navbar from './components/Navbar';
-import {connect} from "react-redux";
+import PrivateRoute from './components/PrivateRoute';
 
 const history = createBrowserHistory();
 
@@ -26,17 +26,12 @@ class App extends Component {
                     </div>
                 </div>
             </Router>
-        );
+        )
     }
 }
 
-const mapStateToProps = (state) => {
-    const {auth} = state;
-    const {isAuthenticated} = auth;
-
-    return {
-        isAuthenticated
-    }
-};
+const mapStateToProps = (state) => ({
+    isAuthenticated: state.auth.isAuthenticated,
+});
 
 export default connect(mapStateToProps)(App);

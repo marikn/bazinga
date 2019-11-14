@@ -7,15 +7,24 @@ import {
     LOGOUT_SUCCESS,
     LOGOUT_FAILURE,
 
-    FETCH_REFRESH_TOKEN_FROM_LOCAL_STORAGE_SUCCESS,
-    FETCH_REFRESH_TOKEN_FROM_LOCAL_STORAGE_FAILURE,
+    USER_REQUEST,
+    USER_SUCCESS,
+    USER_FAILURE,
+
+    FETCH_TOKENS_FROM_LOCAL_STORAGE_SUCCESS,
+    FETCH_TOKENS_FROM_LOCAL_STORAGE_FAILURE,
+
+    TOKEN_REQUEST,
+    TOKEN_SUCCESS,
+    TOKEN_FAILURE
 } from '../actions/authActions'
 
 const initialState = {
     isFetching: false,
     isAuthenticated: false,
-    accessToken: null,
-    refreshToken: null,
+    token: null,
+    exp: null,
+    me: null,
 };
 
 export function auth(state = initialState, action) {
@@ -29,8 +38,8 @@ export function auth(state = initialState, action) {
             return Object.assign({}, state, {
                 isFetching: false,
                 isAuthenticated: true,
-                accessToken: action.accessToken,
-                refreshToken: action.refreshToken,
+                token: action.payload.refresh_token,
+                exp: action.payload.exp
             });
         case LOGIN_FAILURE:
             return Object.assign({}, state, {
@@ -44,27 +53,53 @@ export function auth(state = initialState, action) {
                 isAuthenticated: true
             });
         case LOGOUT_SUCCESS:
-            return Object.assign({}, state, {
-                isFetching: false,
-                isAuthenticated: false,
-                accessToken: null,
-                refreshToken: null,
-            });
+            return Object.assign({}, state, initialState);
         case LOGOUT_FAILURE:
             return Object.assign({}, state, {
                 isFetching: false,
                 isAuthenticated: false
             });
-        case FETCH_REFRESH_TOKEN_FROM_LOCAL_STORAGE_SUCCESS:
+        case FETCH_TOKENS_FROM_LOCAL_STORAGE_SUCCESS:
             return Object.assign({}, state, {
                 isAuthenticated: true,
-                accessToken: action.payload.accessToken,
-                refreshToken: action.payload.refreshToken
+                token: action.payload.token,
+                exp: action.payload.exp
             });
-        case FETCH_REFRESH_TOKEN_FROM_LOCAL_STORAGE_FAILURE:
+        case FETCH_TOKENS_FROM_LOCAL_STORAGE_FAILURE:
             return Object.assign({}, state, {
                 isAuthenticated: false,
-                refreshToken: null
+                token: null,
+                exp: null
+            });
+        case USER_REQUEST:
+            return Object.assign({}, state, {
+                isFetching: true,
+            });
+        case USER_SUCCESS:
+            return Object.assign({}, state, {
+                isFetching: false,
+                me: action.payload
+            });
+        case USER_FAILURE:
+            return Object.assign({}, state, {
+                isFetching: false,
+            });
+        case TOKEN_REQUEST:
+            return Object.assign({}, state, {
+                isFetching: true,
+            });
+        case TOKEN_SUCCESS:
+            return Object.assign({}, state, {
+                isAuthenticated: true,
+                isFetching: false,
+                token: action.payload.refresh_token,
+                exp: action.payload.exp
+            });
+        case TOKEN_FAILURE:
+            return Object.assign({}, state, {
+                isAuthenticated: false,
+                isFetching: false,
+                token: null
             });
         default:
             return state

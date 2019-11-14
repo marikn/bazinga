@@ -1,23 +1,24 @@
 import React from 'react';
+import thunk from 'redux-thunk';
 import ReactDOM from 'react-dom';
 import {Provider} from 'react-redux';
+import {applyMiddleware, createStore} from 'redux';
 import {composeWithDevTools} from 'redux-devtools-extension';
-import {createStore, applyMiddleware} from 'redux';
-import thunkMiddleware from 'redux-thunk';
-import {apiMiddleware} from 'redux-api-middleware';
-
 
 import App from './App';
-// import api from './middleware/api';
 import rootReducer from './reducers/rootReducer';
+import {customApiMiddleware} from './middleware/apiMiddleware';
 import {fetchTokensFromLocalStorage} from './actions/authActions';
 
-const composeEnhancers = composeWithDevTools({});
-const store = createStore(rootReducer, composeEnhancers(
-    applyMiddleware(
-        thunkMiddleware,
-        apiMiddleware),
-));
+const store = createStore(
+    rootReducer,
+    composeWithDevTools(
+        applyMiddleware(
+            customApiMiddleware(),
+            thunk,
+        )
+    )
+);
 
 store.dispatch(fetchTokensFromLocalStorage());
 
